@@ -1,0 +1,43 @@
+version: '1.0'
+services:
+  mongo:
+    image: mongo
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./.data/mongo_data:/data/db
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Wca31933193$!
+    ports:
+      - "1436:1433"
+    volumes:
+      - ./.data/mssql_data:/var/opt/mssql
+
+  postgres:
+    image: postgres
+    container_name: postgres-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5444:5432"
+    restart: always
+    volumes:
+      - ./.data/postgres_data:/var/lib/postgresql/data 
+
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: pg_web_db
+    restart: always
+    ports:
+      - "8082:8081"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432?sslmode=disable
+    depends_on:
+      - postgres
